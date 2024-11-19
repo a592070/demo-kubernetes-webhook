@@ -4,7 +4,6 @@ import (
 	"context"
 	"demo-kubernetes-webhook/pkg/internal/sidecar_mutation/usecase"
 	"encoding/json"
-	"fmt"
 	"github.com/go-logr/logr"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -168,9 +167,6 @@ var _ = Describe("handle request", func() {
 				},
 			},
 		}
-		requestBytes, err := json.Marshal(request)
-		Expect(err).NotTo(HaveOccurred())
-		fmt.Println(string(requestBytes))
 
 		By("invoking handler")
 		resp := handler.Handle(context.Background(), request)
