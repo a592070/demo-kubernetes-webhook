@@ -1,0 +1,108 @@
+### GET request to example server
+GET http://0.0.0.0:8080/health
+
+
+### Failed
+POST http://0.0.0.0:8080/sidecar
+Content-Type: application/json
+
+{
+  "kind":"AdmissionReview",
+  "apiVersion":"admission.k8s.io/v1",
+  "request": {}
+}
+
+
+### Inject sidecar
+POST http://0.0.0.0:8080/sidecar
+Content-Type: application/json
+
+{
+  "kind": "AdmissionReview",
+  "apiVersion": "admission.k8s.io/v1",
+  "request": {
+    "uid": "705ab4f5-6393-11e8-b7cc-42010a800002",
+    "operation": "CREATE",
+    "kind":{"group":"","version":"","kind":""},
+    "resource":{"group":"","version":"","resource":""},
+    "name": "example",
+    "namespace": "example",
+    "requestKind": {
+      "group": "apps",
+      "version": "v1",
+      "kind": "Deployment"
+    },
+    "object": {
+      "metadata": {
+        "name": "example",
+        "namespace": "example",
+        "creationTimestamp":null,
+        "annotations": {
+          "sidecar.example/inject-value": "{\"name\": \"sidecar\", \"image\": \"sidecar:latest\"}",
+          "sidecar.example/inject-name": "sidecar"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "nginx",
+            "image": "nginx",
+            "resources": {}
+          }
+        ]
+      },
+      "status": {}
+    }
+  }
+}
+
+
+### Remove sidecar
+POST http://0.0.0.0:8080/sidecar
+Content-Type: application/json
+
+{
+  "kind": "AdmissionReview",
+  "apiVersion": "admission.k8s.io/v1",
+  "request": {
+    "uid": "705ab4f5-6393-11e8-b7cc-42010a800002",
+    "operation": "CREATE",
+    "kind":{"group":"","version":"","kind":""},
+    "resource":{"group":"","version":"","resource":""},
+    "name": "example",
+    "namespace": "example",
+    "requestKind": {
+      "group": "apps",
+      "version": "v1",
+      "kind": "Deployment"
+    },
+    "object": {
+      "metadata": {
+        "name": "example",
+        "namespace": "example",
+        "creationTimestamp":null,
+        "annotations": {
+          "sidecar.example/inject-value": "",
+          "sidecar.example/inject-name": "sidecar"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "nginx",
+            "image": "nginx",
+            "resources": {}
+          },
+          {
+            "name": "sidecar",
+            "image": "sidecar",
+            "resources": {}
+          }
+        ]
+      },
+      "status": {}
+    }
+  }
+}
+
+###
