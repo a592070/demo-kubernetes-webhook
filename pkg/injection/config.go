@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	name = "sidecar-injector"
+	name = "mutating-webhook"
 )
 
 type config struct {
@@ -22,8 +22,8 @@ type config struct {
 
 func NewConfig() (*config, error) {
 	var rootCmd = &cobra.Command{
-		Short: fmt.Sprintf("%s is able to generate code review summaries using OpenAI", name),
-		Long:  fmt.Sprintf("%s is able to generate code review summaries using OpenAI", name),
+		Short: fmt.Sprintf("%s is the Kubernetes Mutating Webhook", name),
+		Long:  "It is developed to inject sidecar container to kubernetes' pod by using given value.",
 		Use:   name,
 		Run: func(cmd *cobra.Command, args []string) {
 			// Do Stuff Here

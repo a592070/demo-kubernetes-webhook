@@ -13,7 +13,7 @@ test:
 
 build:
 	go mod tidy
-	go build -a -o build/webhook cmd/main.go
+	go build -a -o build/mutating-webhook cmd/main.go
 
 run: build
-	./build/webhook
+	./build/mutating-webhook
