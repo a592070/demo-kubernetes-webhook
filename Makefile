@@ -11,9 +11,18 @@ test:
 	go install github.com/onsi/ginkgo/v2/ginkgo
 	ginkgo -cover --junit-report=report.xml ./...
 
+generate-localhost-ca:
+	openssl req -x509 -newkey rsa:4096 -keyout ca-key.pem -out ca-cert.pem -nodes -subj "/C=TW/O=example.com/OU=example/CN=localhost/emailAddress=example@example.com"
+
 build:
 	go mod tidy
 	go build -a -o build/mutating-webhook cmd/main.go
 
+
+ifeq (run, $(firstword $(MAKECMDGOALS)))
+  runargs := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+  $(eval $(runargs):;@true)
+endif
+
 run: build
-	./build/mutating-webhook
+	./build/mutating-webhook $(runargs)

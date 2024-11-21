@@ -18,6 +18,12 @@ const (
 type config struct {
 	Port     int    `json:"port" validate:"required"`
 	LogLevel string `json:"logLevel" validate:"required,oneof=debug info warn error"`
+	Tls      struct {
+		Enable   bool
+		Port     int    `validate:"required_if=Tls.Enable true"`
+		CertFile string `validate:"required_if=Tls.Enable true"`
+		KeyFile  string `validate:"required_if=Tls.Enable true"`
+	}
 }
 
 func NewConfig() (*config, error) {
@@ -40,6 +46,10 @@ func NewConfig() (*config, error) {
 
 	rootCmd.PersistentFlags().Int("port", 8080, "Port")
 	rootCmd.PersistentFlags().String("log", "info", "Log level")
+	rootCmd.PersistentFlags().Bool("tls-enable", false, "Enable Tls")
+	rootCmd.PersistentFlags().Int("tls-port", 8443, "Tls Port")
+	rootCmd.PersistentFlags().String("tls-cert", "", "Tls Cert Path")
+	rootCmd.PersistentFlags().String("tls-key", "", "Tls Key Path")
 
 	err := rootCmd.Execute()
 	if err != nil {
@@ -54,6 +64,19 @@ func NewConfig() (*config, error) {
 		return nil, errors.Wrap(err, "[NewConfig]failed to bind flag")
 	}
 	if err := v.BindPFlag("LogLevel", rootCmd.PersistentFlags().Lookup("log")); err != nil {
+		return nil, errors.Wrap(err, "[NewConfig]failed to bind flag")
+	}
+
+	if err := v.BindPFlag("Tls.Enable", rootCmd.PersistentFlags().Lookup("tls-enable")); err != nil {
+		return nil, errors.Wrap(err, "[NewConfig]failed to bind flag")
+	}
+	if err := v.BindPFlag("Tls.Port", rootCmd.PersistentFlags().Lookup("tls-port")); err != nil {
+		return nil, errors.Wrap(err, "[NewConfig]failed to bind flag")
+	}
+	if err := v.BindPFlag("Tls.CertFile", rootCmd.PersistentFlags().Lookup("tls-cert")); err != nil {
+		return nil, errors.Wrap(err, "[NewConfig]failed to bind flag")
+	}
+	if err := v.BindPFlag("Tls.KeyFile", rootCmd.PersistentFlags().Lookup("tls-key")); err != nil {
 		return nil, errors.Wrap(err, "[NewConfig]failed to bind flag")
 	}
 

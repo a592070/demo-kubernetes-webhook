@@ -45,7 +45,14 @@ func NewDependenciesInjector() (*DependenciesInjector, error) {
 
 	sidecarMutationHandler := handlers.NewSidecarMutationHandler(logger, decoder, sidecarMutator)
 
-	httpServer, err := server.NewHttpServer(logger, cfg.Port, sidecarMutationHandler)
+	httpServer, err := server.NewHttpServer(
+		logger,
+		cfg.Port,
+		cfg.Tls.Enable,
+		cfg.Tls.Port,
+		cfg.Tls.CertFile,
+		cfg.Tls.KeyFile,
+		sidecarMutationHandler)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create http server")
 	}
