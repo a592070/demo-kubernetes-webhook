@@ -1,0 +1,30 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sidecar-injector-selfsigned-tls
+  labels:
+    app: sidecar-injector
+    component: certificate
+spec:
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  duration: 9120h0m0s
+  renewBefore: 720h0m0s
+  dnsNames:
+    - "sidecar-injector.sidecar-injector.svc.cluster.local"
+    - "sidecar-injector.sidecar-injector.svc"
+    - "sidecar-injector.sidecar-injector"
+  commonName: "sidecar-injector.sidecar-injector.svc.cluster.local"
+  subject:
+    organizations:
+      - example.co
+    organizationalUnits:
+      - example
+    countries:
+      - TW
+  secretName: sidecar-injector-selfsigned-tls
+  issuerRef:
+    name: selfsigned-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

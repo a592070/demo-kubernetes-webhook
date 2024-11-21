@@ -1,0 +1,36 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: sidecar-injector
+  labels:
+    app: sidecar-injector
+webhooks:
+  - name: sidecar-injector.example.com
+    clientConfig:
+      service:
+        name: sidecar-injector
+        namespace: sidecar-injector
+        path: "/sidecar"
+      caBundle: "${CA_BUNDLE}"
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods", "pods/*"]
+    namespaceSelector:
+#      matchLabels: {}
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - example
+    objectSelector:
+      matchLabels:
+        sidecar.example/inject: "true"
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+#    failurePolicy: Ignore

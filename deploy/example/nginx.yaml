@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: example
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+        sidecar.example/inject: "true"
+      annotations:
+        sidecar.example/inject-name: "nginx-prometheus-exporter"
+        sidecar.example/inject-value: '{
+          "name": "nginx-prometheus-exporter", 
+          "image": "nginx/nginx-prometheus-exporter:latest", 
+          "args": [ "--nginx.scrape-uri=http://localhost:8080/stub_status" ],
+          "ports": [ { "name": "metrics", "containerPort": 9113 } ]
+        }'
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: status-config
+      containers:
+        - name: nginx
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d/status.conf
+              subPath: status.conf
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: status-config
+  namespace: example
+data:
+  status.conf: |-
+    server {
+      listen 8080;
+      location /stub_status {
+        stub_status;
+      }
+    }

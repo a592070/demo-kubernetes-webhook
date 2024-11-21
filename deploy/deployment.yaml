@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sidecar-injector
+  labels:
+    app: sidecar-injector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sidecar-injector
+  template:
+    metadata:
+      name: sidecar-injector
+      labels:
+        app: sidecar-injector
+    spec:
+      serviceAccountName: sidecar-injector
+      volumes:
+        - name: tls
+          secret:
+            secretName: sidecar-injector-selfsigned-tls
+      containers:
+        - name: sidecar-injector
+          image: sidecar-injector
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: http
+            - containerPort: 8443
+              protocol: TCP
+              name: https
+          env:
+            - name: PORT
+              value: "8080"
+            - name: TLS_ENABLE
+              value: "true"
+            - name: TLS_PORT
+              value: "8443"
+            - name: TLS_CERTFILE
+              value: "/app/tls/tls.crt"
+            - name: TLS_KEYFILE
+              value: "/app/tls/tls.key"
+          volumeMounts:
+            - mountPath: /app/tls
+              name: tls
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              port: https
+              path: /health
+              scheme: HTTPS
+          readinessProbe:
+            httpGet:
+              port: https
+              path: /health
+              scheme: HTTPS
+      restartPolicy: Always

@@ -1,0 +1,15 @@
+FROM golang:1.23.3-alpine3.20 as builder
+
+WORKDIR /workspace
+COPY . .
+RUN apk add --no-cache make && \
+    make build
+
+FROM alpine:3.20 as runtime
+
+WORKDIR /app
+RUN apk add --no-cache ca-certificates
+COPY --from=builder /workspace/build/* ./
+
+EXPOSE 8080
+CMD ["/app/mutating-webhook"]
