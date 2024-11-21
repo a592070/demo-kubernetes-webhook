@@ -1,8 +1,8 @@
 package main
 
 import (
-	"demo-kubernetes-webhook/sample/handlers"
-	"demo-kubernetes-webhook/sample/usecase"
+	"demo-kubernetes-webhook/simple/handlers"
+	"demo-kubernetes-webhook/simple/usecase"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
@@ -58,7 +58,7 @@ func newRootCommand(commandName string) *cobra.Command {
 }
 
 func main() {
-	rootCmd := newRootCommand("sample-mutating-webhook")
+	rootCmd := newRootCommand("simple-mutating-webhook")
 	err := rootCmd.Execute()
 	if err != nil {
 		log.Fatal(err)

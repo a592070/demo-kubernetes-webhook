@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"demo-kubernetes-webhook/sample/usecase"
+	"demo-kubernetes-webhook/simple/usecase"
 	"encoding/json"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
